@@ -79,13 +79,14 @@ var uncompress = function(entry) {
   }
   // Deflated
   else if (entry.compressionMethod === 8) {
-    var uncompressed = JSInflate.inflate(entry.data);
+    var uncompressed = readUTF8String(JSInflate.inflate(entry.data));
   }
   return uncompressed;
 }
 
 var htmlcontents = function(n) {
-  var htmlstring = n.html().replace(/(\r\n|\n|\r)/gm,'').replace(/( \w+)=(\w+[ /])/gm,'$1="$2"').replace(/<\?/gm,'<!--?').replace(/\?>/gm,'?-->');
+  var htmlstring = n.html().replace(/( \w+)=(\w+[ /])/gm,'$1="$2"').replace(/<\?/gm,'<!--?').replace(/\?>/gm,'?-->');
+  // removed replace(/(\r\n|\n|\r)/gm,'').
   return htmlstring;
 }
 
@@ -176,7 +177,40 @@ function GetIEByteArray_ByteStr(IEByteArray) {
   return rawBytes.replace(/[\s\S]/g, 
     function( match ) { return ByteMapping[match]; }) + lastChr;
 }
- 
+
+// following function copied from http://snipplr.com/view/31206/
+function readUTF8String(bytes) {
+  var ix = 0;
+  if( bytes.slice(0,3) == "\xEF\xBB\xBF") {
+    ix = 3;
+  }
+  var string = "";
+  for( ; ix < bytes.length; ix++ ) {
+    var byte1 = bytes.charCodeAt(ix);
+    if( byte1 < 0x80 ) {
+      string += String.fromCharCode(byte1);
+    } else if( byte1 >= 0xC2 && byte1 < 0xE0 ) {
+      var byte2 = bytes.charCodeAt(++ix);
+      string += String.fromCharCode(((byte1&0x1F)<<6) + (byte2&0x3F));
+    } else if( byte1 >= 0xE0 && byte1 < 0xF0 ) {
+      var byte2 = bytes.charCodeAt(++ix);
+      var byte3 = bytes.charCodeAt(++ix);
+      string += String.fromCharCode(((byte1&0xFF)<<12) + ((byte2&0x3F)<<6) + (byte3&0x3F));
+    } else if( byte1 >= 0xF0 && byte1 < 0xF5) {
+      var byte2 = bytes.charCodeAt(++ix);
+      var byte3 = bytes.charCodeAt(++ix);
+      var byte4 = bytes.charCodeAt(++ix);
+      var codepoint = ((byte1&0x07)<<18) + ((byte2&0x3F)<<12)+ ((byte3&0x3F)<<6) + (byte4&0x3F);
+      codepoint -= 0x10000;
+      string += String.fromCharCode(
+        (codepoint>>10) + 0xD800,
+        (codepoint&0x3FF) + 0xDC00
+      );
+    }
+  }
+  return string;
+}
+
 var IEBinaryToArray_ByteStr_Script = 
   "<!-- IEBinaryToArray_ByteStr -->\r\n"+
   "<script type='text/vbscript'>\r\n"+
