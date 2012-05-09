@@ -2,9 +2,7 @@
 <xsl:stylesheet version="1.0" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exslt="http://exslt.org/common"
-  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
-  xmlns:msxsl="urn:schemas-microsoft-com:xslt"
-  exclude-result-prefixes="exslt msxsl">
+  exclude-result-prefixes="exslt">
 
   <msxsl:script language="JScript" implements-prefix="exslt">
    this['node-set'] =  function (x) {

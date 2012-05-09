@@ -13,54 +13,53 @@
     <script type="text/javascript" src="applyXslt.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
-          applyXslt(); <!-- this function will replace the class="xslt" place-
-                            holders in the <body> -->
+          applyXslt(); // this function will replace the class="xslt" place-
+                       // holders in the <body>
       });
     </script>
   </head>
   <body>
-    <h1 class="title">Demo fetching an online XLSX file, unzipping it's contents, fetching a specific worksheet and applying a presentation stylesheet</h1>
-    <div
-      class="xslt stylesheet"
-      url="presentation.xslt"><!-- the 'stylesheet' placeholder applies an XSLT
-                                   stylesheet on it's inner HTML and is replaced
-                                   by the output of the stylesheet -->
-      <div 
-        class="xslt stylesheet" 
-        worksheet="Mytable" 
-        headerrow="2" 
-        url="msxlsx2xml.xslt"><!-- the msxlsx2xml.xslt stylesheet converts an
-                                   unzipped XLSX file to a more semantical XML
-                                   format (actually: html table) -->
-        <div 
-          class="xslt unzip"  
-          url="dataMS.xlsx"><!-- the 'unzip' placeholder downloads any online 
-                                 zipfile and is replaced by the contents of the
-                                 XML-files in the package -->
-        </div>
-      </div>
-    </div>
-    <h1 class="title">Demo fetching an online Microsoft Spreadsheet XML file, fetching a specific worksheet, without presentation stylesheet</h1>
+    <h1 class="title">Demo fetching an online <a href="dataMS.xlsx">XLSX file</a>, unzipping it's contents, fetching a specific worksheet, without applying a presentation stylesheet</h1>
     <div 
       class="xslt stylesheet" 
-      worksheet="Mytable" 
+      worksheet="Data" 
+      headerrow="2" 
+      url="msxlsx2xml.xslt"><!-- the msxlsx2xml.xslt stylesheet converts an
+                                 unzipped XLSX file to a more semantical XML
+                                 format (actually: html table). 
+                                 Note how you can add extra attributes
+                                 to the div to become parameters to the 
+                                 stylesheet -->
+      <div 
+        class="xslt unzip"  
+        url="dataMS.xlsx"><!-- the 'unzip' placeholder downloads any online 
+                               zipfile and is replaced by the contents of the
+                               XML-files in the package -->
+      </div>
+    </div>
+    <h1 class="title">Demo fetching an online Microsoft Spreadsheet <a href="dataMS.xml">XML file</a>, fetching a specific worksheet, without presentation stylesheet</h1>
+    <div 
+      class="xslt stylesheet" 
+      worksheet="Data" 
       headerrow="2" 
       url="msxls2xml.xslt">
       <div 
         class="xslt document"  
-        url="dataMS.xls"><!-- the 'document' placeholder downloads any online
+        url="dataMS.xml"><!-- the 'document' placeholder downloads any online
                               XML file and is replaced by its contents -->
       </div>
     </div>
     <h1 class="title">Demo fetching two files and feeding the combined input to a presentation stylesheet</h1>
     <div
       class="xslt stylesheet"
-      url="presentation.xslt">
+      url="presentation.xslt"><!-- the 'stylesheet' placeholder applies an XSLT
+                                   stylesheet on it's inner HTML and is replaced
+                                   by the output of the stylesheet -->
       <div><!-- this div is only needed to provide a single root element as 
                 input to the stylesheet ('valid XML') -->
         <div 
           class="xslt stylesheet" 
-          worksheet="Mytable" 
+          worksheet="Data" 
           headerrow="2" 
           url="msxlsx2xml.xslt">
           <div 
@@ -70,12 +69,12 @@
         </div>
         <div 
           class="xslt stylesheet" 
-          worksheet="Mytable" 
+          worksheet="Data" 
           headerrow="2" 
           url="msxls2xml.xslt">
           <div 
             class="xslt document"  
-            url="dataMS.xls">
+            url="dataMS.xml">
           </div>
         </div>
       </div>
