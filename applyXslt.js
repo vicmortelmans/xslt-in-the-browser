@@ -29,7 +29,7 @@ var applyXslt = function(node, returnXML) {
       return xml;
     }
   }
-}
+};
 
 var xmldocument = function(n) {
   // returns an XML string !!
@@ -40,7 +40,7 @@ var xmldocument = function(n) {
   });
   var xml = xmlresponse.responseText;
   return xml;
-} 
+};
 
 var unzip = function(n) {
   // returns an XML string !!
@@ -70,7 +70,7 @@ var unzip = function(n) {
     output += '</div>';
     return output;
   }  
-}
+};
 
 var uncompress = function(entry) {
   // Uncompressed
@@ -82,24 +82,24 @@ var uncompress = function(entry) {
     var uncompressed = readUTF8String(JSInflate.inflate(entry.data));
   }
   return uncompressed;
-}
+};
 
 var htmlcontents = function(n) {
   var htmlstring = n.html().replace(/( \w+)=(\w+[ /])/gm,'$1="$2"').replace(/<\?/gm,'<!--?').replace(/\?>/gm,'?-->');
   // removed replace(/(\r\n|\n|\r)/gm,'').
   return htmlstring;
-}
+};
 
 var stylesheet = function(n) {
   // returns an XML string !!
   // document as child
   if (n.children().first().is('.xslt')) {
-    var xml = $.parseXML(applyXslt(n.children().first(), true));
+    var xmlstring = applyXslt(n.children().first(), true);
   }
   // html as child
   else {    
     applyXslt(n.children().first()); // recursion to children; we assume only one child
-    var xml = $.parseXML(htmlcontents(n)); 
+    var xmlstring = htmlcontents(n); 
   }
   var xslresponse = $.ajax({
     async: false,
@@ -108,6 +108,9 @@ var stylesheet = function(n) {
   });
   // code for IE
   if (window.ActiveXObject) {
+    var xml = new ActiveXObject("Msxml2.FreeThreadedDOMDocument.6.0");
+    xml.async = false;
+    xml.loadXML(xmlstring); 
     var xsl = new ActiveXObject("Msxml2.FreeThreadedDOMDocument.6.0");
     xsl.setProperty("AllowXsltScript", true);
     xsl.loadXML(xslresponse.responseText);
@@ -123,6 +126,7 @@ var stylesheet = function(n) {
   }
   // code for Chrome, Mozilla, Firefox, Opera, etc.
   else if (document.implementation && document.implementation.createDocument) {
+    var xml = $.parseXML(xmlstring);
     var xsl = xslresponse.responseXML;
     var xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsl);
@@ -132,9 +136,9 @@ var stylesheet = function(n) {
     var output = (new XMLSerializer()).serializeToString(xsltProcessor.transformToFragment(xml,document));
   }
   return output;
-}
+};
 
-function load_binary_resource(url) {  
+var load_binary_resource = function(url) {  
   // code for IE
   if (window.ActiveXObject) {
     var req = new window.XMLHttpRequest();
@@ -162,9 +166,9 @@ function load_binary_resource(url) {
     if (req.status != 200) return '';  
     return req.responseText;  
   }
-}  
+}; 
 
-function GetIEByteArray_ByteStr(IEByteArray) {
+var GetIEByteArray_ByteStr = function(IEByteArray) {
   var ByteMapping = {};
   for ( var i = 0; i < 256; i++ ) {
     for ( var j = 0; j < 256; j++ ) {
@@ -176,10 +180,10 @@ function GetIEByteArray_ByteStr(IEByteArray) {
   var lastChr = IEBinaryToArray_ByteStr_Last(IEByteArray);
   return rawBytes.replace(/[\s\S]/g, 
     function( match ) { return ByteMapping[match]; }) + lastChr;
-}
+};
 
-// following function copied from http://snipplr.com/view/31206/
-function readUTF8String(bytes) {
+// following function copied from http://snipplr.com/view/31206/ and patched
+var readUTF8String = function(bytes) {
   var ix = 0;
   if( bytes.slice(0,3) == "\xEF\xBB\xBF") {
     ix = 3;
@@ -209,7 +213,7 @@ function readUTF8String(bytes) {
     }
   }
   return string;
-}
+};
 
 var IEBinaryToArray_ByteStr_Script = 
   "<!-- IEBinaryToArray_ByteStr -->\r\n"+
@@ -227,5 +231,6 @@ var IEBinaryToArray_ByteStr_Script =
   "	End If\r\n"+
   "End Function\r\n"+
   "</script>\r\n";
+
 document.write(IEBinaryToArray_ByteStr_Script);
 
