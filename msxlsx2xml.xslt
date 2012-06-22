@@ -3,6 +3,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exslt="http://exslt.org/common"
   xmlns:os="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
   xmlns:msxsl="urn:schemas-microsoft-com:xslt"
   exclude-result-prefixes="exslt msxsl">
 
@@ -24,8 +25,8 @@
   <xsl:template match="os:sheets/os:sheet">
     <xsl:if test="@name = $worksheet">
       <table class=" xml table ">
-        <xsl:apply-templates mode="rows" select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',current()/@sheetId,'.xml')]//os:row[count(preceding-sibling::os:row) = $headerrow - 1]"/>
-        <xsl:apply-templates mode="rows" select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',current()/@sheetId,'.xml')]//os:row[count(preceding-sibling::os:row) &gt; $headerrow - 1]"/>
+        <xsl:apply-templates mode="rows" select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',substring-after(current()/@r:id,'rId'),'.xml')]//os:row[count(preceding-sibling::os:row) = $headerrow - 1]"/>
+        <xsl:apply-templates mode="rows" select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',substring-after(current()/@r:id,'rId'),'.xml')]//os:row[count(preceding-sibling::os:row) &gt; $headerrow - 1]"/>
       </table>
     </xsl:if>
   </xsl:template>
@@ -64,9 +65,10 @@
         <xsl:variable name="row" select="."/>
         <tr class=" xml row ">
           <xsl:for-each select=".//ancestor::os:worksheet//os:row[count(preceding-sibling::os:row) = $headerrow - 1]/os:c">
-            <xsl:variable name="r">
-              <xsl:value-of select="substring-before(@r,../@r)"/>
-              <xsl:value-of select="exslt:node-set($row)/@r"/>
+            <!-- iterating header row cells, because datarows may not have a cell for each column -->
+            <xsl:variable name="r"><!-- is the coordinates 'A1',... of the target cell -->
+              <xsl:value-of select="substring-before(@r,../@r)"/><!-- is the character 'A', 'B', 'C',... indicating the COLUMN -->
+              <xsl:value-of select="exslt:node-set($row)/@r"/><!-- is the number 1, 2, 3,... indicating the ROW -->
             </xsl:variable>
             <xsl:variable name="name">
               <xsl:call-template name="unspace">
@@ -101,7 +103,7 @@
 
   <xsl:template name="unspace">
     <xsl:param name="string" select="."/>
-    <xsl:value-of select="translate($string,' ','')"/>
+    <xsl:value-of select="translate(normalize-space($string),' ','_')"/>
   </xsl:template>
 
   <xsl:template name="cellvalue">
@@ -118,7 +120,7 @@
 
   <xsl:template name="colorattribute">
     <xsl:param name="fillid"/>
-    <xsl:for-each select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',//os:sheets/os:sheet[@name = 'Colors']/@sheetId,'.xml')]//os:c">
+    <xsl:for-each select="//div[@class = 'xlsx file'][@name = concat('xl/worksheets/sheet',substring-after(//os:sheets/os:sheet[@name = 'Colors']/@r:id,'rId'),'.xml')]//os:c">
       <xsl:variable name="colorfillid">
         <xsl:call-template name="fillid"/>
       </xsl:variable>
