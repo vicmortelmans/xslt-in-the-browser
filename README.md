@@ -19,8 +19,3 @@ This is what the files are about:
 * msxls2xml.xslt - stylesheet that transforms Microsoft 2003 Spreadsheet XML format into a more semantical XML format (actually, an HTML table with speciall classes)
 * msxlsx2xml.xslt - stylesheet that transforms Microsoft Office Open XML format (XLSX) into a more semantical XML format
 * processing.html - webpage for demo purpose only and where some information on the different types of placeholders is stored
-<<<<<<< HEAD
-=======
-
-Note: the demo is not completely working in IE9 in compatibility mode, but it does work in standard mode... The reason is that in compatibility mode, the function htmlcontents() returns all elementes with uppercase names, which is not good for XPATH-matching by the XSLT. This only happens when not directly embedding subsequent @class='xslt' elements.
->>>>>>> a7221798db2b9bd9503c590ad3861b693590ebbb
