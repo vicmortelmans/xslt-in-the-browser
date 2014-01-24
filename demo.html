@@ -1,59 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Demo for xslt-in-the-browser</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js-unzip.min.js"></script>
-<script type="text/javascript" src="js-inflate.min.js"></script>
-<script type="text/javascript" src="applyXslt.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-applyXslt(); // this function will replace the class="xslt" place-
-// holders in the body
-});
-</script>
-</head>
-<body>
-<h1 class="title">Demo fetching an online <a href="dataMS.xlsx">XLSX file</a>, unzipping it's
-contents, fetching a specific worksheet, without applying a presentation stylesheet</h1>
-<div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxlsx2xml.xslt">
-<!-- the msxlsx2xml.xslt stylesheet converts an
-unzipped XLSX file to a more semantical XML
-format (actually: html table). 
-Note how you can add extra attributes
-to the div to become parameters to the 
-stylesheet -->
-<div class="xslt unzip" url="dataMS.xlsx"
-><!-- the 'unzip' placeholder downloads any online 
-zipfile and is replaced by the contents of the
-XML-files in the package -->
-</div>
-</div>
-<h1 class="title">Demo fetching an online Microsoft Spreadsheet <a href="dataMS.xml">XML file</a>,
-fetching a specific worksheet, without presentation stylesheet</h1>
-<div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxls2xml.xslt">
-<div class="xslt document" url="dataMS.xml"
-><!-- the 'document' placeholder downloads any online
-XML file and is replaced by its contents -->
-</div>
-</div>
-<h1 class="title">Demo fetching two files and feeding the combined input to a presentation
-stylesheet</h1>
-<!-- the 'stylesheet' placeholder applies an XSLT
-stylesheet on it's inner HTML and is replaced
-by the output of the stylesheet -->
-<!-- note the inside div that is only needed to provide a single root element as 
-input to the stylesheet ('valid XML') -->
-<div class="xslt stylesheet" url="presentation.xslt">
-<div>
-<div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxlsx2xml.xslt">
-<div class="xslt unzip" url="dataMS.xlsx"> </div>
-</div>
-<div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxls2xml.xslt">
-<div class="xslt document" url="dataMS.xml"> </div>
-</div>
-</div>
-</div>
-</body>
+    
+    <head>
+        <title>Demo for xslt-in-the-browser</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="js-unzip.min.js"></script>
+        <script type="text/javascript" src="js-inflate.min.js"></script>
+        <script type="text/javascript" src="applyXslt.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                applyXslt(); // this function will replace the class="xslt" place-
+                // holders in the body
+            });
+        </script>
+    </head>
+    
+    <body>
+        <h1 class="title">Demo fetching an online
+            <a href="dataMS.xlsx">XLSX file</a>, unzipping it's contents, fetching a specific worksheet, without applying
+            a presentation stylesheet</h1>
+        <div class="xslt stylesheet" worksheet="Data"
+        headerrow="2" url="msxlsx2xml.xslt">
+            <!-- the msxlsx2xml.xslt stylesheet converts an unzipped XLSX file to
+            a more semantical XML format (actually: html table). Note how you can add
+            extra attributes to the div to become parameters to the stylesheet -->
+            <div class="xslt unzip" url="dataMS.xlsx">
+                <!-- the 'unzip' placeholder downloads any online zipfile and is replaced
+                by the contents of the XML-files in the package -->
+            </div>
+        </div>
+        <h1 class="title">Demo fetching an online Microsoft Spreadsheet
+            <a href="dataMS.xml">XML file</a>, fetching a specific worksheet, without presentation stylesheet</h1>
+        <div
+        class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxls2xml.xslt">
+            <div class="xslt document" url="dataMS.xml">
+                <!-- the 'document' placeholder downloads any online XML file and is replaced
+                by its contents -->
+            </div>
+            </div>
+            <h1 class="title">Demo fetching two files and feeding the combined input to a presentation
+                stylesheet</h1>
+            <!-- the 'stylesheet' placeholder applies an XSLT stylesheet
+            on it's inner HTML and is replaced by the output of the stylesheet -->
+            <!-- note the inside div that is only needed to provide a single root
+            element as input to the stylesheet ('valid XML') -->
+            <div class="xslt stylesheet" url="presentation.xslt">
+                <div>
+                    <div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxlsx2xml.xslt">
+                        <div class="xslt unzip" url="dataMS.xlsx"></div>
+                    </div>
+                    <div class="xslt stylesheet" worksheet="Data" headerrow="2" url="msxls2xml.xslt">
+                        <div class="xslt document" url="dataMS.xml"></div>
+                    </div>
+                </div>
+            </div>
+    </body>
+
 </html>
