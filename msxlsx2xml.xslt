@@ -15,7 +15,7 @@
     }
   </msxsl:script-->
   
-  <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+  <xsl:output method="xml" indent="no" encoding="UTF-8"/>
 
   <xsl:param name="worksheet" select="'Sheet1'"/>
   <xsl:param name="headerrow" select="1"/>
@@ -24,12 +24,12 @@
   <xsl:key name="fillid-by-style"
     match="//div/div[@name = 'xl/styles.xml']/os:styleSheet/os:cellXfs/os:xf/@fillId"
     use="count(../preceding-sibling::os:xf)"/>
-  <xsl:key name="styles-by-fillid"
-    match="//div/div[@name = 'xl/styles.xml']/os:styleSheet/os:cellXfs/os:xf"
-    use="@fillId"/>
   <xsl:key name="string-by-v"
     match="//div/div[@name = 'xl/sharedStrings.xml']/os:sst/os:si/os:t"
     use="count(../preceding-sibling::os:si)"/>
+  <xsl:key name="colors-by-fillid"
+    match="//div/div[@name = concat('xl/worksheets/sheet',substring-after(//div/div[@name = 'xl/workbook.xml']/os:workbook/os:sheets/os:sheet[@name = 'Colors']/@r:id,'rId'),'.xml')]/os:worksheet/os:sheetData/os:row/os:c"
+    use="key('fillid-by-style',@s)"/>
 
   <xsl:template match="@*|node()">
     <xsl:apply-templates select="@*|node()"/>
@@ -167,27 +167,17 @@
     <xsl:param name="s"/>
     <xsl:variable name="f" select="key('fillid-by-style',$s)"/>
     <xsl:if test="$f != '0'">
-      <xsl:variable name="styles-with-same-fillid">
-        <xsl:call-template name="styles-with-same-fillid">
-          <xsl:with-param name="f" select="$f"/>
-        </xsl:call-template>
-      </xsl:variable>
       <xsl:call-template name="unspace">
         <xsl:with-param name="string">
-          <xsl:call-template name="cellvalue">
-            <xsl:with-param name="v" select="//div/div[@name = concat('xl/worksheets/sheet',substring-after(//div/div[@name = 'xl/workbook.xml']/os:workbook/os:sheets/os:sheet[@name = 'Colors']/@r:id,'rId'),'.xml')]/os:worksheet/os:sheetData/os:row/os:c[contains($styles-with-same-fillid,concat(' ',@s,' '))]/os:v"/>
+          <xsl:for-each select="key('colors-by-fillid',$f)">
+            <xsl:call-template name="cellvalue">
+              <xsl:with-param name="v" select="os:v"/>
+            </xsl:call-template>
             <!-- reminder: this won't work if the contents of the color field is NOT a shared string (e.g. a number) -->
-          </xsl:call-template>
+          </xsl:for-each>
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="styles-with-same-fillid">
-    <xsl:param name="f"/>
-    <xsl:for-each select="key('styles-by-fillid',$f)">
-      <xsl:value-of select="concat(' ',count(preceding-sibling::os:xf),' ')"/>
-    </xsl:for-each>
-  </xsl:template>
-  
 </xsl:stylesheet>
