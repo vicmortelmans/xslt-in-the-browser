@@ -19,6 +19,9 @@
 
   <xsl:param name="worksheet" select="'Sheet1'"/>
   <xsl:param name="headerrow" select="1"/>
+
+  <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
+  <xsl:variable name="colors" select="//div/div[@name = concat('xl/worksheets/sheet',substring-after(//div/div[@name = 'xl/workbook.xml']/os:workbook/os:sheets/os:sheet[@name = 'Colors']/@r:id,'rId'),'.xml')]/os:worksheet/os:sheetData/os:row/os:c"/>
   
   <xsl:key name="rows" match="//div/div/os:worksheet/os:sheetData/os:row" use="generate-id()"/>
   <xsl:key name="fillid-by-style"
@@ -27,9 +30,15 @@
   <xsl:key name="string-by-v"
     match="//div/div[@name = 'xl/sharedStrings.xml']/os:sst/os:si/os:t"
     use="count(../preceding-sibling::os:si)"/>
-  <xsl:key name="colors-by-fillid"
-    match="//div/div[@name = concat('xl/worksheets/sheet',substring-after(//div/div[@name = 'xl/workbook.xml']/os:workbook/os:sheets/os:sheet[@name = 'Colors']/@r:id,'rId'),'.xml')]/os:worksheet/os:sheetData/os:row/os:c"
-    use="key('fillid-by-style',@s)"/>
+  <!--xsl:key name="colors-by-fillid-for-ie"
+    match="$colors"
+    use="//div/div[@name = 'xl/styles.xml']/os:styleSheet/os:cellXfs/os:xf[count(preceding-sibling::os:xf) = current()/@s]/@fillId"/-->
+  <!-- this doesn't work in Chrome, I guess the current() call is not working? -->
+  <!--xsl:key name="colors-by-fillid-for-chrome"
+    match="$colors"
+    use="key('fillid-by-style',@s)"/-->
+  <!-- "key()" is not allowed in @use in Internet Explorer -->
+
 
   <xsl:template match="@*|node()">
     <xsl:apply-templates select="@*|node()"/>
@@ -169,7 +178,7 @@
     <xsl:if test="$f != '0'">
       <xsl:call-template name="unspace">
         <xsl:with-param name="string">
-          <xsl:for-each select="key('colors-by-fillid',$f)">
+          <xsl:for-each select="$colors[key('fillid-by-style',@s) = $f]">
             <xsl:call-template name="cellvalue">
               <xsl:with-param name="v" select="os:v"/>
             </xsl:call-template>
